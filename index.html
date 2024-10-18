@@ -114,15 +114,15 @@
 
         <!-- 3x3 grid for the 9 boxes -->
         <div class="grid-container">
-            <div class="grid-item" id="box7">Box 7 (Dysfunctional Geniuses)</div>
+            <div class="grid-item" id="box7">Box 7 (Potential Gems)</div>
             <div class="grid-item" id="box2">Box 2 (High Potentials)</div>
             <div class="grid-item" id="box1">Box 1 (Stars)</div>
-            <div class="grid-item" id="box8">Box 8 (Up or Out Dilemmas)</div>
+            <div class="grid-item" id="box8">Box 8 (Inconsistent Performers)</div>
             <div class="grid-item" id="box4">Box 4 (Core Players)</div>
             <div class="grid-item" id="box3">Box 3 (High Performers)</div>
-            <div class="grid-item" id="box9">Box 9 (Bad Hires)</div>
-            <div class="grid-item" id="box6">Box 6 (Up or Out Grinders)</div>
-            <div class="grid-item" id="box5">Box 5 (Workhorses)</div>
+            <div class="grid-item" id="box9">Box 9 (Underperformers)</div>
+            <div class="grid-item" id="box6">Box 6 (Backups)</div>
+            <div class="grid-item" id="box5">Box 5 (Consistent Performers)</div>
         </div>
 
         <button id="addIndividualBtn" class="btn btn-primary mb-3">Add Individual</button>
@@ -262,11 +262,11 @@
             if (totalScore >= 19) return '2 (High Potentials)';
             if (totalScore >= 16) return '3 (High Performers)';
             if (totalScore >= 13) return '4 (Core Players)';
-            if (totalScore >= 10) return '5 (Workhorses)';
+            if (totalScore >= 10) return '5 (Consistent Performers)';
             if (totalScore >= 7) return '6 (Up or Out Grinders)';
-            if (totalScore >= 4) return '7 (Dysfunctional Geniuses)';
-            if (totalScore >= 1) return '8 (Up or Out Dilemmas)';
-            return '9 (Bad Hires)';
+            if (totalScore >= 4) return '7 (Potential Gems)';
+            if (totalScore >= 1) return '8 (Inconsistent Performers)';
+            return '9 (Underperformers)';
         }
 
         // Move the individual to the appropriate grid box
