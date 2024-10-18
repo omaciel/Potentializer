@@ -62,7 +62,7 @@
             width: 150px; /* Width for Movement column */
         }
 
-        .score-col, .box-col, .actions-col {
+        .score-col, .box-col, .actions-col .del-col {
             width: 100px; /* Width for smaller columns */
         }
 
@@ -78,15 +78,15 @@
 
         <!-- 3x3 grid for the 9 boxes -->
         <div class="grid-container">
-            <div class="grid-item" id="box9">Box 9 (Bad Hires)</div>
-            <div class="grid-item" id="box8">Box 8 (Up or Out Dilemmas)</div>
             <div class="grid-item" id="box7">Box 7 (Dysfunctional Geniuses)</div>
-            <div class="grid-item" id="box6">Box 6 (Up or Out Grinders)</div>
-            <div class="grid-item" id="box5">Box 5 (Workhorses)</div>
-            <div class="grid-item" id="box4">Box 4 (Core Players)</div>
-            <div class="grid-item" id="box3">Box 3 (High Performers)</div>
             <div class="grid-item" id="box2">Box 2 (High Potentials)</div>
             <div class="grid-item" id="box1">Box 1 (Stars)</div>
+            <div class="grid-item" id="box8">Box 8 (Up or Out Dilemmas)</div>
+            <div class="grid-item" id="box4">Box 4 (Core Players)</div>
+            <div class="grid-item" id="box3">Box 3 (High Performers)</div>
+            <div class="grid-item" id="box9">Box 9 (Bad Hires)</div>
+            <div class="grid-item" id="box6">Box 6 (Up or Out Grinders)</div>
+            <div class="grid-item" id="box5">Box 5 (Workhorses)</div>
         </div>
 
         <button id="addIndividualBtn" class="btn btn-primary mb-3">Add Individual</button>
@@ -137,7 +137,9 @@
                 <td rowspan="2" class="assignedBox">-</td>
                 <td rowspan="2"><button class="btn btn-danger btn-sm removeBtn">Remove</button></td>
             `;
+            const emptyRow = document.createElement('tr');
             tableBody.appendChild(newRow);
+            tableBody.appendChild(emptyRow);
 
             // Add event listener to update score and box when dropdowns change
             newRow.querySelectorAll('select').forEach(select => {
