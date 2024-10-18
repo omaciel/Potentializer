@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Potentializer - A 9-Box Talent Review Tool</title>
-    <meta name="description" content="Potentializer is a standalone, simple HTML-based 9-Box Talent Review tool designed for people managers to visually categorize and assess team members' performance and potential."
+    <meta name="description" content="Potentializer is a standalone, simple HTML-based 9-Box Talent Review tool designed for people managers to visually categorize and assess team members' performance and potential.">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script type="application/ld+json">
         {
@@ -21,11 +21,13 @@
         }
         }
     </script>
+
     <style>
         body {
             padding: 20px;
         }
 
+        /* 9-box grid styling */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -45,6 +47,7 @@
             flex-direction: column;
         }
 
+        /* Table layout */
         .container {
             max-width: 100%;
             overflow-x: auto;
@@ -62,6 +65,7 @@
             vertical-align: middle; /* Ensure vertical alignment */
         }
 
+        /* Define column sizes */
         th {
             width: 150px; /* Consistent width for table headers */
         }
@@ -78,7 +82,7 @@
             width: 150px; /* Width for Movement column */
         }
 
-        .score-col, .box-col, .actions-col .del-col {
+        .score-col, .box-col, .actions-col {
             width: 100px; /* Width for smaller columns */
         }
 
@@ -86,61 +90,46 @@
             width: 100%; /* Ensure dropdown takes up full cell width */
         }
 
-        #box1 {
-            background-color: #C4D7FF; /* Light blue */
-        }
-        #box2 {
-            background-color: #C4D7FF; /* Light blue */
-        }
+        /* Define 9-box background colors */
+        #box1 { background-color: #C4D7FF; } /* Light blue */
+        #box2 { background-color: #C4D7FF; } /* Light blue */
+        #box3 { background-color: #96CEB4; } /* Light green */
+        #box4 { background-color: #96CEB4; } /* Light green */
+        #box5 { background-color: #96CEB4; } /* Light green */
+        #box6 { background-color: #96CEB4; } /* Light green */
+        #box7 { background-color: #FEFFA7; } /* Light yellow */
+        #box8 { background-color: #FFBF61; } /* Light orange */
+        #box9 { background-color: #F95454; } /* Light red */
 
-        #box3 {
-            background-color: #96CEB4; /* Light green */
+        /* Footer styling */
+        footer {
+            text-align: center;
+            margin-top: 30px;
         }
-
-        #box4 {
-            background-color: #96CEB4; /* Light green */
-        }
-
-        #box5 {
-            background-color: #96CEB4; /* Light green */
-        }
-
-        #box6 {
-            background-color: #96CEB4; /* Light green */
-        }
-
-        #box7 {
-            background-color: #FEFFA7; /* Light yellow */
-        }
-
-        #box8 {
-            background-color: #FFBF61; /* Light orange */
-        }
-
-        #box9 {
-            background-color: #F95454; /* Light red */
-        }
-
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <!-- Header Row -->
+    <header>
         <h1 class="text-center">Potentializer</h1>
+    </header>
 
-        <!-- 3x3 grid for the 9 boxes -->
-        <div class="grid-container">
-            <div class="grid-item" id="box7">Box 7 (Potential Gems)</div>
-            <div class="grid-item" id="box2">Box 2 (High Potentials)</div>
-            <div class="grid-item" id="box1">Box 1 (Stars)</div>
-            <div class="grid-item" id="box8">Box 8 (Inconsistent Performers)</div>
-            <div class="grid-item" id="box4">Box 4 (Core Players)</div>
-            <div class="grid-item" id="box3">Box 3 (High Performers)</div>
-            <div class="grid-item" id="box9">Box 9 (Underperformers)</div>
-            <div class="grid-item" id="box6">Box 6 (Backups)</div>
-            <div class="grid-item" id="box5">Box 5 (Consistent Performers)</div>
-        </div>
+    <!-- 9-Box Section Row -->
+    <section class="grid-container">
+        <div class="grid-item" id="box7">Box 7 (Potential Gems)</div>
+        <div class="grid-item" id="box2">Box 2 (High Potentials)</div>
+        <div class="grid-item" id="box1">Box 1 (Stars)</div>
+        <div class="grid-item" id="box8">Box 8 (Inconsistent Performers)</div>
+        <div class="grid-item" id="box4">Box 4 (Core Players)</div>
+        <div class="grid-item" id="box3">Box 3 (High Performers)</div>
+        <div class="grid-item" id="box9">Box 9 (Underperformers)</div>
+        <div class="grid-item" id="box6">Box 6 (Backups)</div>
+        <div class="grid-item" id="box5">Box 5 (Consistent Performers)</div>
+    </section>
 
+    <!-- Individuals Table Row -->
+    <section class="container">
         <button id="addIndividualBtn" class="btn btn-primary mb-3">Add Individual</button>
 
         <table class="table table-striped" id="individualTable">
@@ -165,11 +154,20 @@
                 <!-- Rows for individuals will be dynamically added here -->
             </tbody>
         </table>
-    </div>
+    </section>
 
+    <!-- Footer Row -->
+    <footer>
+        <h4>Powered By <a href="https://github.com/omaciel/Potentializer" target="_blank" rel="noopener" >Potentializer</a></h4>
+        <a href="https://www.buymeacoffee.com/omaciel" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Your existing JavaScript logic -->
     <script>
         let individualCount = 0;
-        const individualBoxMapping = {}; // To track which box each individual is in
+        const individualBoxMapping = {};
 
         // Add individual function
         document.getElementById('addIndividualBtn').addEventListener('click', function() {
@@ -328,6 +326,5 @@
         }
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
