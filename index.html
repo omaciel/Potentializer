@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Potentializer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 100%; /* Ensures the container takes the full width of the page */
+            overflow-x: auto; /* Enables horizontal scrolling if the table is too wide */
+        }
+
+        table {
+            width: max-content; /* Table will take up its natural width */
+            margin: 0 auto; /* Center the table horizontally */
+        }
+
+        th, td {
+            padding: 10px; /* Adds padding to improve visibility */
+            text-align: center; /* Ensures the text is centered */
+            white-space: nowrap; /* Prevent text wrapping to keep layout intact */
+        }
+
+        select {
+            width: 100%; /* Ensures dropdowns take up full width for better visibility */
+            min-width: 150px; /* Minimum width for dropdowns to avoid truncation */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="text-center">Potentializer</h1>
+
+        <button id="addIndividualBtn" class="btn btn-primary mb-3">Add Individual</button>
+
+        <table class="table table-striped" id="individualTable">
+            <thead>
+                <tr>
+                    <th rowspan="2">Individual</th>
+                    <th colspan="2">Performance</th>
+                    <th colspan="2">Future Talent</th>
+                    <th rowspan="2">Movement Readiness</th>
+                    <th rowspan="2">Talent Actions</th>
+                    <th rowspan="2">Total Score</th>
+                    <th rowspan="2">Assigned Box</th>
+                    <th rowspan="2">Actions</th>
+                </tr>
+                <tr>
+                    <th>What</th>
+                    <th>How</th>
+                    <th>Growth Agility</th>
+                    <th>Leadership Agility</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows for individuals will be dynamically added here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let individualCount = 0;
+
+        // Add individual function
+        document.getElementById('addIndividualBtn').addEventListener('click', function() {
+            const tableBody = document.querySelector('#individualTable tbody');
+            individualCount++;
+            
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>Individual ${individualCount}</td>
+                <td>${createDropdown('performanceWhat', 'Performance')}</td>
+                <td>${createDropdown('performanceHow', 'Performance')}</td>
+                <td>${createDropdown('talentGrowth', 'FutureTalent')}</td>
+                <td>${createDropdown('talentLeadership', 'FutureTalent')}</td>
+                <td>${createDropdown('movementReadiness', 'Movement')}</td>
+                <td>${createDropdown('talentActions', 'TalentActions')}</td>
+                <td class="totalScore">0</td>
+                <td class="assignedBox">-</td>
+                <td><button class="btn btn-danger btn-sm removeBtn">Remove</button></td>
+            `;
+            tableBody.appendChild(newRow);
+
+            // Add event listener to update score and box when dropdowns change
+            newRow.querySelectorAll('select').forEach(select => {
+                select.addEventListener('change', calculateScore);
+            });
+
+            // Add event listener to remove row
+            newRow.querySelector('.removeBtn').addEventListener('click', function() {
+                newRow.remove();
+            });
+        });
+
+        // Create dropdown HTML based on the type (Performance, FutureTalent, Movement, TalentActions)
+        function createDropdown(questionType, category) {
+            let options = '';
+
+            switch (category) {
+                case 'Performance':
+                    options = `
+                        <option value="" selected disabled></option>
+                        <option value="4">Surpasses Expectations</option>
+                        <option value="3">Meets Expectations</option>
+                        <option value="2"></option>
+                        <option value="1">Meets Some Expectations</option>
+                        <option value="-1">Does Not Meet Expectations</option>
+                    `;
+                    break;
+                case 'FutureTalent':
+                    options = `
+                        <option value="" selected disabled></option>
+                        <option value="4">Always/Most of the Time</option>
+                        <option value="1">Sometimes</option>
+                        <option value="-1">Never</option>
+                    `;
+                    break;
+                case 'Movement':
+                    options = `
+                        <option value="" selected disabled></option>
+                        <option value="4">Ready for promotion</option>
+                        <option value="1">Continue growing in current role</option>
+                        <option value="-1">Not well placed</option>
+                    `;
+                    break;
+                case 'TalentActions':
+                    options = `
+                        <option value="" selected disabled></option>
+                        <option value="4">Growth/Ready for lateral move or promotion</option>
+                        <option value="2">Rewards</option>
+                        <option value="1">Development</option>
+                        <option value="-1">Growth/Not well placed</option>
+                    `;
+                    break;
+            }
+
+            return `<select class="form-select ${questionType}">${options}</select>`;
+        }
+
+        // Calculate the total score and assigned box
+        function calculateScore() {
+            const row = this.closest('tr');
+            let totalScore = 0;
+
+            // Sum up scores for the row
+            row.querySelectorAll('select').forEach(select => {
+                totalScore += parseInt(select.value);
+            });
+
+            // Update total score
+            row.querySelector('.totalScore').innerText = totalScore;
+
+            // Determine which box to assign
+            const assignedBox = row.querySelector('.assignedBox');
+            assignedBox.innerText = getBox(totalScore);
+        }
+
+        // Determine which box based on the total score
+        function getBox(totalScore) {
+            if (totalScore >= 22) return '1 (Stars)';
+            if (totalScore >= 19) return '2 (High Potentials)';
+            if (totalScore >= 16) return '3 (High Performers)';
+            if (totalScore >= 13) return '4 (Core Players)';
+            if (totalScore >= 10) return '5 (Workhorses)';
+            if (totalScore >= 7) return '6 (Up or Out Grinders)';
+            if (totalScore >= 4) return '7 (Dysfunctional Geniuses)';
+            if (totalScore >= 1) return '8 (Up or Out Dilemmas)';
+            return '9 (Bad Hires)';
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
