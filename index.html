@@ -10,7 +10,6 @@
             padding: 20px;
         }
 
-        /* Container for the 3x3 grid representing the 9 boxes */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -36,19 +35,39 @@
         }
 
         table {
-            width: max-content;
-            margin: 0 auto;
+            width: 100%;
+            table-layout: fixed; /* Ensure consistent column widths */
         }
 
         th, td {
             padding: 10px;
             text-align: center;
             white-space: nowrap;
+            vertical-align: middle; /* Ensure vertical alignment */
+        }
+
+        th {
+            width: 150px; /* Consistent width for table headers */
+        }
+
+        .performance-col {
+            width: 200px; /* Width for Performance column */
+        }
+
+        .talent-col {
+            width: 200px; /* Width for Talent column */
+        }
+
+        .movement-col {
+            width: 150px; /* Width for Movement column */
+        }
+
+        .score-col, .box-col, .actions-col {
+            width: 100px; /* Width for smaller columns */
         }
 
         select {
-            width: 100%;
-            min-width: 150px;
+            width: 100%; /* Ensure dropdown takes up full cell width */
         }
     </style>
 </head>
@@ -76,19 +95,18 @@
             <thead>
                 <tr>
                     <th rowspan="2">Individual</th>
-                    <th colspan="2">Performance</th>
-                    <th colspan="2">Future Talent</th>
-                    <th rowspan="2">Movement Readiness</th>
-                    <th rowspan="2">Talent Actions</th>
-                    <th rowspan="2">Total Score</th>
-                    <th rowspan="2">Assigned Box</th>
-                    <th rowspan="2"></th>
+                    <th colspan="2" class="performance-col">Performance</th>
+                    <th colspan="2" class="talent-col">Talent</th>
+                    <th rowspan="2" class="movement-col">Movement</th>
+                    <th rowspan="2" class="actions-col">Actions</th>
+                    <th rowspan="2" class="score-col">Score</th>
+                    <th rowspan="2" class="box-col">Box</th>
                 </tr>
                 <tr>
                     <th>What</th>
                     <th>How</th>
-                    <th>Growth Agility</th>
-                    <th>Leadership Agility</th>
+                    <th>Growth</th>
+                    <th>Leadership</th>
                 </tr>
             </thead>
             <tbody>
@@ -98,162 +116,162 @@
     </div>
 
     <script>
-    let individualCount = 0;
-    const individualBoxMapping = {}; // To track which box each individual is in
+        let individualCount = 0;
+        const individualBoxMapping = {}; // To track which box each individual is in
 
-    // Add individual function
-    document.getElementById('addIndividualBtn').addEventListener('click', function() {
-        const tableBody = document.querySelector('#individualTable tbody');
-        individualCount++;
-        
-        const newRow = document.createElement('tr');
-        newRow.innerHTML = `
-            <td>Individual ${individualCount}</td>
-            <td>${createDropdown('performanceWhat', 'Performance')}</td>
-            <td>${createDropdown('performanceHow', 'Performance')}</td>
-            <td>${createDropdown('talentGrowth', 'FutureTalent')}</td>
-            <td>${createDropdown('talentLeadership', 'FutureTalent')}</td>
-            <td>${createDropdown('movementReadiness', 'Movement')}</td>
-            <td>${createDropdown('talentActions', 'TalentActions')}</td>
-            <td class="totalScore">0</td>
-            <td class="assignedBox">-</td>
-            <td><button class="btn btn-danger btn-sm removeBtn">Remove</button></td>
-        `;
-        tableBody.appendChild(newRow);
+        // Add individual function
+        document.getElementById('addIndividualBtn').addEventListener('click', function() {
+            const tableBody = document.querySelector('#individualTable tbody');
+            individualCount++;
+            
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td rowspan="2">Individual ${individualCount}</td>
+                <td>${createDropdown('performanceWhat', 'Performance')}</td>
+                <td>${createDropdown('performanceHow', 'Performance')}</td>
+                <td>${createDropdown('talentGrowth', 'FutureTalent')}</td>
+                <td>${createDropdown('talentLeadership', 'FutureTalent')}</td>
+                <td rowspan="2">${createDropdown('movementReadiness', 'Movement')}</td>
+                <td rowspan="2">${createDropdown('talentActions', 'TalentActions')}</td>
+                <td rowspan="2" class="totalScore">0</td>
+                <td rowspan="2" class="assignedBox">-</td>
+                <td rowspan="2"><button class="btn btn-danger btn-sm removeBtn">Remove</button></td>
+            `;
+            tableBody.appendChild(newRow);
 
-        // Add event listener to update score and box when dropdowns change
-        newRow.querySelectorAll('select').forEach(select => {
-            select.addEventListener('change', calculateScore);
-        });
-
-        // Add event listener to remove row
-        newRow.querySelector('.removeBtn').addEventListener('click', function() {
-            removeIndividualFromBox(newRow.cells[0].innerText); // Remove individual from the box
-            newRow.remove();
-        });
-    });
-
-    // Create dropdown HTML based on the type (Performance, FutureTalent, Movement, TalentActions)
-    function createDropdown(questionType, category) {
-        let options = '';
-
-        switch (category) {
-            case 'Performance':
-                options = `
-                    <option value="" selected disabled></option>
-                    <option value="4">Surpasses Expectations</option>
-                    <option value="3">Meets Expectations</option>
-                    <option value="2"></option>
-                    <option value="1">Meets Some Expectations</option>
-                    <option value="-1">Does Not Meet Expectations</option>
-                `;
-                break;
-            case 'FutureTalent':
-                options = `
-                    <option value="" selected disabled></option>
-                    <option value="4">Always/Most of the Time</option>
-                    <option value="1">Sometimes</option>
-                    <option value="-1">Never</option>
-                `;
-                break;
-            case 'Movement':
-                options = `
-                    <option value="" selected disabled></option>
-                    <option value="4">Ready for promotion</option>
-                    <option value="1">Continue growing in current role</option>
-                    <option value="-1">Not well placed</option>
-                `;
-                break;
-            case 'TalentActions':
-                options = `
-                    <option value="" selected disabled></option>
-                    <option value="4">Growth/Ready for lateral move or promotion</option>
-                    <option value="2">Rewards</option>
-                    <option value="1">Development</option>
-                    <option value="-1">Growth/Not well placed</option>
-                `;
-                break;
-        }
-
-        return `<select class="form-select ${questionType}">${options}</select>`;
-    }
-
-    // Calculate the total score and assigned box
-    function calculateScore() {
-        const row = this.closest('tr');
-        let totalScore = 0;
-
-        // Sum up scores for the row
-        row.querySelectorAll('select').forEach(select => {
-            totalScore += parseInt(select.value);
-        });
-
-        // Update total score
-        row.querySelector('.totalScore').innerText = totalScore;
-
-        // Determine which box to assign
-        const assignedBox = row.querySelector('.assignedBox');
-        const boxNumber = getBox(totalScore);
-        assignedBox.innerText = boxNumber;
-
-        // Move individual to the corresponding grid box
-        moveToBox(boxNumber, row.cells[0].innerText);
-    }
-
-    // Determine which box based on the total score
-    function getBox(totalScore) {
-        if (totalScore >= 22) return '1 (Stars)';
-        if (totalScore >= 19) return '2 (High Potentials)';
-        if (totalScore >= 16) return '3 (High Performers)';
-        if (totalScore >= 13) return '4 (Core Players)';
-        if (totalScore >= 10) return '5 (Workhorses)';
-        if (totalScore >= 7) return '6 (Up or Out Grinders)';
-        if (totalScore >= 4) return '7 (Dysfunctional Geniuses)';
-        if (totalScore >= 1) return '8 (Up or Out Dilemmas)';
-        return '9 (Bad Hires)';
-    }
-
-    // Move the individual to the appropriate grid box
-    function moveToBox(boxNumber, individualName) {
-        const boxId = `box${boxNumber[0]}`; // Extract the box number from the text
-        const currentBoxId = individualBoxMapping[individualName]; // Get the current box of the individual
-
-        // If the individual is already in a box, remove them from the previous box
-        if (currentBoxId) {
-            const currentBoxElement = document.getElementById(currentBoxId);
-            const individualsInBox = currentBoxElement.querySelectorAll('p');
-            individualsInBox.forEach(p => {
-                if (p.innerText === individualName) {
-                    p.remove(); // Remove the individual from the previous box
-                }
-            });
-        }
-
-        // Add the individual to the new box
-        const boxElement = document.getElementById(boxId);
-        boxElement.innerHTML += `<p>${individualName}</p>`;
-
-        // Update the mapping to track the individual's current box
-        individualBoxMapping[individualName] = boxId;
-    }
-
-    // Remove the individual from the grid when their row is deleted
-    function removeIndividualFromBox(individualName) {
-        const currentBoxId = individualBoxMapping[individualName];
-
-        if (currentBoxId) {
-            const currentBoxElement = document.getElementById(currentBoxId);
-            const individualsInBox = currentBoxElement.querySelectorAll('p');
-            individualsInBox.forEach(p => {
-                if (p.innerText === individualName) {
-                    p.remove(); // Remove the individual from the current box
-                }
+            // Add event listener to update score and box when dropdowns change
+            newRow.querySelectorAll('select').forEach(select => {
+                select.addEventListener('change', calculateScore);
             });
 
-            // Remove the individual from the mapping
-            delete individualBoxMapping[individualName];
+            // Add event listener to remove row
+            newRow.querySelector('.removeBtn').addEventListener('click', function() {
+                removeIndividualFromBox(newRow.cells[0].innerText); // Remove individual from the box
+                newRow.remove();
+            });
+        });
+
+        // Create dropdown HTML based on the type (Performance, FutureTalent, Movement, TalentActions)
+        function createDropdown(questionType, category) {
+            let options = '';
+
+            switch (category) {
+                case 'Performance':
+                    options = `
+                        <option value="" selected disabled></option>
+                        <option value="4">Surpasses Expectations</option>
+                        <option value="3">Meets Expectations</option>
+                        <option value="2"></option>
+                        <option value="1">Meets Some Expectations</option>
+                        <option value="-1">Does Not Meet Expectations</option>
+                    `;
+                    break;
+                case 'FutureTalent':
+                    options = `
+                        <option value="" selected disabled></option>
+                        <option value="4">Always/Most of the Time</option>
+                        <option value="1">Sometimes</option>
+                        <option value="-1">Never</option>
+                    `;
+                    break;
+                case 'Movement':
+                    options = `
+                        <option value="" selected disabled></option>
+                        <option value="4">Ready for promotion</option>
+                        <option value="1">Continue growing in current role</option>
+                        <option value="-1">Not well placed</option>
+                    `;
+                    break;
+                case 'TalentActions':
+                    options = `
+                        <option value="" selected disabled></option>
+                        <option value="4">Growth/Ready for lateral move or promotion</option>
+                        <option value="2">Rewards</option>
+                        <option value="1">Development</option>
+                        <option value="-1">Growth/Not well placed</option>
+                    `;
+                    break;
+            }
+
+            return `<select class="form-select ${questionType}">${options}</select>`;
         }
-    }
+
+        // Calculate the total score and assigned box
+        function calculateScore() {
+            const row = this.closest('tr');
+            let totalScore = 0;
+
+            // Sum up scores for the row and the next row
+            row.querySelectorAll('select').forEach(select => {
+                totalScore += parseInt(select.value);
+            });
+
+            // Update total score
+            row.querySelector('.totalScore').innerText = totalScore;
+
+            // Determine which box to assign
+            const assignedBox = row.querySelector('.assignedBox');
+            const boxNumber = getBox(totalScore);
+            assignedBox.innerText = boxNumber;
+
+            // Move individual to the corresponding grid box
+            moveToBox(boxNumber, row.cells[0].innerText);
+        }
+
+        // Determine which box based on the total score
+        function getBox(totalScore) {
+            if (totalScore >= 22) return '1 (Stars)';
+            if (totalScore >= 19) return '2 (High Potentials)';
+            if (totalScore >= 16) return '3 (High Performers)';
+            if (totalScore >= 13) return '4 (Core Players)';
+            if (totalScore >= 10) return '5 (Workhorses)';
+            if (totalScore >= 7) return '6 (Up or Out Grinders)';
+            if (totalScore >= 4) return '7 (Dysfunctional Geniuses)';
+            if (totalScore >= 1) return '8 (Up or Out Dilemmas)';
+            return '9 (Bad Hires)';
+        }
+
+        // Move the individual to the appropriate grid box
+        function moveToBox(boxNumber, individualName) {
+            const boxId = `box${boxNumber[0]}`; // Extract the box number from the text
+            const currentBoxId = individualBoxMapping[individualName]; // Get the current box of the individual
+
+            // If the individual is already in a box, remove them from the previous box
+            if (currentBoxId) {
+                const currentBoxElement = document.getElementById(currentBoxId);
+                const individualsInBox = currentBoxElement.querySelectorAll('p');
+                individualsInBox.forEach(p => {
+                    if (p.innerText === individualName) {
+                        p.remove(); // Remove the individual from the previous box
+                    }
+                });
+            }
+
+            // Add the individual to the new box
+            const boxElement = document.getElementById(boxId);
+            boxElement.innerHTML += `<p>${individualName}</p>`;
+
+            // Update the mapping to track the individual's current box
+            individualBoxMapping[individualName] = boxId;
+        }
+
+        // Remove the individual from the grid when their row is deleted
+        function removeIndividualFromBox(individualName) {
+            const currentBoxId = individualBoxMapping[individualName];
+
+            if (currentBoxId) {
+                const currentBoxElement = document.getElementById(currentBoxId);
+                const individualsInBox = currentBoxElement.querySelectorAll('p');
+                individualsInBox.forEach(p => {
+                    if (p.innerText === individualName) {
+                        p.remove(); // Remove the individual from the current box
+                    }
+                });
+
+                // Remove the individual from the mapping
+                delete individualBoxMapping[individualName];
+            }
+        }
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
