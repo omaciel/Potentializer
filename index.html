@@ -130,7 +130,7 @@
 
     <!-- Individuals Table Row -->
     <section class="container">
-        <button id="addIndividualBtn" class="btn btn-primary mb-3">Add Individual</button>
+        <button id="addIndividualBtn" class="btn btn-primary btn-sm mb-3">Add Individual</button>
 
         <table class="table table-striped" id="individualTable">
             <thead>
@@ -177,12 +177,12 @@
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
                 <td rowspan="2">Individual ${individualCount}</td>
-                <td>${createDropdown('performanceWhat', 'Performance')}</td>
-                <td>${createDropdown('performanceHow', 'Performance')}</td>
-                <td>${createDropdown('talentGrowth', 'FutureTalent')}</td>
-                <td>${createDropdown('talentLeadership', 'FutureTalent')}</td>
-                <td rowspan="2">${createDropdown('movementReadiness', 'Movement')}</td>
-                <td rowspan="2">${createDropdown('talentActions', 'TalentActions')}</td>
+                <td>${createDropdownButton('performanceWhat', ['Surpasses Expectations', 'Meets Expectations', 'Meets Some Expectations', 'Does Not Meet Expectations'])}</td>
+                <td>${createDropdownButton('performanceHow', ['Surpasses Expectations', 'Meets Expectations', 'Meets Some Expectations', 'Does Not Meet Expectations'])}</td>
+                <td>${createDropdownButton('talentGrowth', ['Always/Most of the Time', 'Sometimes', 'Never'])}</td>
+                <td>${createDropdownButton('talentLeadership', ['Always/Most of the Time', 'Sometimes', 'Never'])}</td>
+                <td rowspan="2">${createDropdownButton('movementReadiness', ['Ready for promotion', 'Continue growing in current role', 'Not well placed'])}</td>
+                <td rowspan="2">${createDropdownButton('talentActions', ['Growth/Ready for lateral move or promotion', 'Rewards', 'Development', 'Growth/Not well placed'])}</td>
                 <td rowspan="2" class="totalScore">0</td>
                 <td rowspan="2" class="assignedBox">-</td>
                 <td rowspan="2"><button class="btn btn-danger btn-sm removeBtn">Remove</button></td>
@@ -192,8 +192,8 @@
             tableBody.appendChild(emptyRow);
 
             // Add event listener to update score and box when dropdowns change
-            newRow.querySelectorAll('select').forEach(select => {
-                select.addEventListener('change', calculateScore);
+            newRow.querySelectorAll('.dropdown-item').forEach(select => {
+                select.addEventListener('click', calculateScore);
             });
 
             // Add event listener to remove row
@@ -203,49 +203,25 @@
             });
         });
 
-        // Create dropdown HTML based on the type (Performance, FutureTalent, Movement, TalentActions)
-        function createDropdown(questionType, category) {
-            let options = '';
+        // Create dropdown button
+        function createDropdownButton(inputId, options) {
+            let dropdownHTML = `<div class="input-group input-group-sm mb-3">
+              <input type="text" class="form-control" aria-label="Selected option" id="${inputId}" readonly>
+              <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">⬇</button>
+              <ul class="dropdown-menu dropdown-menu-end">`;
 
-            switch (category) {
-                case 'Performance':
-                    options = `
-                        <option value="" selected disabled></option>
-                        <option value="4">Surpasses Expectations</option>
-                        <option value="3">Meets Expectations</option>
-                        <option value="2"></option>
-                        <option value="1">Meets Some Expectations</option>
-                        <option value="-1">Does Not Meet Expectations</option>
-                    `;
-                    break;
-                case 'FutureTalent':
-                    options = `
-                        <option value="" selected disabled></option>
-                        <option value="4">Always/Most of the Time</option>
-                        <option value="1">Sometimes</option>
-                        <option value="-1">Never</option>
-                    `;
-                    break;
-                case 'Movement':
-                    options = `
-                        <option value="" selected disabled></option>
-                        <option value="4">Ready for promotion</option>
-                        <option value="1">Continue growing in current role</option>
-                        <option value="-1">Not well placed</option>
-                    `;
-                    break;
-                case 'TalentActions':
-                    options = `
-                        <option value="" selected disabled></option>
-                        <option value="4">Growth/Ready for lateral move or promotion</option>
-                        <option value="2">Rewards</option>
-                        <option value="1">Development</option>
-                        <option value="-1">Growth/Not well placed</option>
-                    `;
-                    break;
-            }
+            options.forEach(option => {
+              dropdownHTML += `<li><a class="dropdown-item" href="#" onclick="setValue(this, '${option}', '${inputId}')">${option}</a></li>`;
+            });
 
-            return `<select class="form-select form-select-sm ${questionType}">${options}</select>`;
+            dropdownHTML += '</ul></div>';
+            return dropdownHTML;
+        }
+
+        // Set value in input field when dropdown item is clicked
+        function setValue(element, value, inputId) {
+            document.getElementById(inputId).value = value;
+            calculateScore();
         }
 
         // Calculate the total score and assigned box
@@ -254,8 +230,9 @@
             let totalScore = 0;
 
             // Sum up scores for the row and the next row
-            row.querySelectorAll('select').forEach(select => {
-                totalScore += parseInt(select.value);
+            row.querySelectorAll('input').forEach(input => {
+                const value = input.value;
+                totalScore += getScore(value);
             });
 
             // Update total score
@@ -268,6 +245,27 @@
 
             // Move individual to the corresponding grid box
             moveToBox(boxNumber, row.cells[0].innerText);
+        }
+
+        // Get score based on selected value
+        function getScore(value) {
+            const scoreMapping = {
+                'Surpasses Expectations': 4,
+                'Meets Expectations': 3,
+                'Meets Some Expectations': 1,
+                'Does Not Meet Expectations': -1,
+                'Always/Most of the Time': 4,
+                'Sometimes': 1,
+                'Never': -1,
+                'Ready for promotion': 4,
+                'Continue growing in current role': 1,
+                'Not well placed': -1,
+                'Growth/Ready for lateral move or promotion': 4,
+                'Rewards': 2,
+                'Development': 1,
+                'Growth/Not well placed': -1
+            };
+            return scoreMapping[value] || 0;
         }
 
         // Determine which box based on the total score
