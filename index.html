@@ -176,7 +176,7 @@
             
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
-                <td rowspan="2">Individual ${individualCount}</td>
+                <td rowspan="2"><input type="text" class="form-control form-control-sm mb-3" id="individualName${individualCount}" placeholder="Enter Name"></td>
                 <td>${createDropdownButton('performanceWhat', ['Surpasses Expectations', 'Meets Expectations', 'Meets Some Expectations', 'Does Not Meet Expectations'])}</td>
                 <td>${createDropdownButton('performanceHow', ['Surpasses Expectations', 'Meets Expectations', 'Meets Some Expectations', 'Does Not Meet Expectations'])}</td>
                 <td>${createDropdownButton('talentGrowth', ['Always/Most of the Time', 'Sometimes', 'Never'])}</td>
@@ -184,7 +184,7 @@
                 <td rowspan="2">${createDropdownButton('movementReadiness', ['Ready for promotion', 'Continue growing in current role', 'Not well placed'])}</td>
                 <td rowspan="2">${createDropdownButton('talentActions', ['Growth/Ready for lateral move or promotion', 'Rewards', 'Development', 'Growth/Not well placed'])}</td>
                 <td rowspan="2" class="totalScore">0</td>
-                <td rowspan="2" class="assignedBox">-</td>
+                <td rowspan="2" class="assignedBox text-wrap">-</td>
                 <td rowspan="2"><button class="btn btn-danger btn-sm removeBtn">Remove</button></td>
             `;
             const emptyRow = document.createElement('tr');
@@ -198,7 +198,13 @@
 
             // Add event listener to remove row
             newRow.querySelector('.removeBtn').addEventListener('click', function() {
-                removeIndividualFromBox(newRow.cells[0].innerText); // Remove individual from the box
+                // Get the individual's name from the input field instead of from innerText
+                const individualName = newRow.querySelector(`#individualName${individualCount}`).value;
+
+                // Remove the individual from the box using the retrieved name
+                removeIndividualFromBox(individualName);
+
+                // Remove the row from the table
                 newRow.remove();
             });
         });
@@ -238,13 +244,18 @@
             // Update total score
             row.querySelector('.totalScore').innerText = totalScore;
 
+            // Get the individual's name from the input field
+            const individualName = row.querySelector(`#individualName${individualCount}`).value;
+
             // Determine which box to assign
             const assignedBox = row.querySelector('.assignedBox');
             const boxNumber = getBox(totalScore);
             assignedBox.innerText = boxNumber;
 
-            // Move individual to the corresponding grid box
-            moveToBox(boxNumber, row.cells[0].innerText);
+            // Move individual to the corresponding grid box using the name from the input field
+            if (individualName) {
+                moveToBox(boxNumber, individualName);
+            }
         }
 
         // Get score based on selected value
