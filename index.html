@@ -181,14 +181,14 @@
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
                 <td rowspan="2"><input type="text" class="form-control form-control-sm mb-3" id="individualName${uniqueId}" placeholder="Enter Name"></td>
-                <td>${createDropdownButton(`performanceWhat${uniqueId}`, ['Surpasses Expectations', 'Meets Expectations', 'Meets Some Expectations', 'Does Not Meet Expectations'])}</td>
-                <td>${createDropdownButton(`performanceHow${uniqueId}`, ['Surpasses Expectations', 'Meets Expectations', 'Meets Some Expectations', 'Does Not Meet Expectations'])}</td>
-                <td>${createDropdownButton(`talentGrowth${uniqueId}`, ['Always/Most of the Time', 'Sometimes', 'Never'])}</td>
-                <td>${createDropdownButton(`talentLeadership${uniqueId}`, ['Always/Most of the Time', 'Sometimes', 'Never'])}</td>
-                <td rowspan="2">${createDropdownButton(`movementReadiness${uniqueId}`, ['Ready for promotion', 'Continue growing in current role', 'Not well placed'])}</td>
-                <td rowspan="2">${createDropdownButton(`talentActions${uniqueId}`, ['Growth/Ready for lateral move or promotion', 'Rewards', 'Development', 'Growth/Not well placed'])}</td>
-                <td rowspan="2" class="totalScore">0</td>
-                <td rowspan="2" class="assignedBox">-</td>
+                <td>${createDropdownButton(`performanceWhat${uniqueId}`, ['Surpasses Expectations', 'Meets Expectations', 'Meets Some Expectations', 'Does Not Meet Expectations'], uniqueId)}</td>
+                <td>${createDropdownButton(`performanceHow${uniqueId}`, ['Surpasses Expectations', 'Meets Expectations', 'Meets Some Expectations', 'Does Not Meet Expectations'], uniqueId)}</td>
+                <td>${createDropdownButton(`talentGrowth${uniqueId}`, ['Always/Most of the Time', 'Sometimes', 'Never'], uniqueId)}</td>
+                <td>${createDropdownButton(`talentLeadership${uniqueId}`, ['Always/Most of the Time', 'Sometimes', 'Never'], uniqueId)}</td>
+                <td rowspan="2">${createDropdownButton(`movementReadiness${uniqueId}`, ['Ready for promotion', 'Continue growing in current role', 'Not well placed'], uniqueId)}</td>
+                <td rowspan="2">${createDropdownButton(`talentActions${uniqueId}`, ['Growth/Ready for lateral move or promotion', 'Rewards', 'Development', 'Growth/Not well placed'], uniqueId)}</td>
+                <td rowspan="2" class="totalScore mb-3">0</td>
+                <td rowspan="2" class="assignedBox text-wrap mb-3">-</td>
                 <td rowspan="2"><button class="btn btn-danger btn-sm removeBtn">Remove</button></td>
             `;
 
@@ -210,14 +210,14 @@
         });
 
         // Create dropdown button
-        function createDropdownButton(inputId, options) {
+        function createDropdownButton(inputId, options, uniqueId) {
             let dropdownHTML = `<div class="input-group input-group-sm mb-3">
-              <input type="text" class="form-control" aria-label="Selected option" id="${inputId}" readonly>
+              <input type="text" class="form-control form-control-sm" aria-label="Selected option" id="${inputId}" readonly>
               <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">⬇</button>
               <ul class="dropdown-menu dropdown-menu-end">`;
 
             options.forEach(option => {
-              dropdownHTML += `<li><a class="dropdown-item" href="#" onclick="setValue(this, '${option}', '${inputId}')">${option}</a></li>`;
+                dropdownHTML += `<li><a class="dropdown-item" href="#" onclick="setValue(this, '${option}', '${inputId}', ${uniqueId})">${option}</a></li>`;
             });
 
             dropdownHTML += '</ul></div>';
@@ -225,9 +225,9 @@
         }
 
         // Set value in input field when dropdown item is clicked
-        function setValue(element, value, inputId) {
+        function setValue(element, value, inputId, uniqueId) {
             document.getElementById(inputId).value = value;
-            calculateScore();
+            calculateScore(uniqueId); // Pass uniqueId to calculateScore
         }
 
         // Calculate the total score and assigned box
