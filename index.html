@@ -172,40 +172,40 @@
         // Add individual function
         document.getElementById('addIndividualBtn').addEventListener('click', function() {
             const tableBody = document.querySelector('#individualTable tbody');
-            individualCount++;
-            
+            individualCount++; // Increment individual count to make each individual unique
+
+            // Create a unique identifier for each individual
+            const uniqueId = individualCount;
+
+            // Create new rows with unique identifiers for the individual
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
-                <td rowspan="2"><input type="text" class="form-control form-control-sm mb-3" id="individualName${individualCount}" placeholder="Enter Name"></td>
-                <td>${createDropdownButton('performanceWhat', ['Surpasses Expectations', 'Meets Expectations', 'Meets Some Expectations', 'Does Not Meet Expectations'])}</td>
-                <td>${createDropdownButton('performanceHow', ['Surpasses Expectations', 'Meets Expectations', 'Meets Some Expectations', 'Does Not Meet Expectations'])}</td>
-                <td>${createDropdownButton('talentGrowth', ['Always/Most of the Time', 'Sometimes', 'Never'])}</td>
-                <td>${createDropdownButton('talentLeadership', ['Always/Most of the Time', 'Sometimes', 'Never'])}</td>
-                <td rowspan="2">${createDropdownButton('movementReadiness', ['Ready for promotion', 'Continue growing in current role', 'Not well placed'])}</td>
-                <td rowspan="2">${createDropdownButton('talentActions', ['Growth/Ready for lateral move or promotion', 'Rewards', 'Development', 'Growth/Not well placed'])}</td>
+                <td rowspan="2"><input type="text" class="form-control form-control-sm mb-3" id="individualName${uniqueId}" placeholder="Enter Name"></td>
+                <td>${createDropdownButton(`performanceWhat${uniqueId}`, ['Surpasses Expectations', 'Meets Expectations', 'Meets Some Expectations', 'Does Not Meet Expectations'])}</td>
+                <td>${createDropdownButton(`performanceHow${uniqueId}`, ['Surpasses Expectations', 'Meets Expectations', 'Meets Some Expectations', 'Does Not Meet Expectations'])}</td>
+                <td>${createDropdownButton(`talentGrowth${uniqueId}`, ['Always/Most of the Time', 'Sometimes', 'Never'])}</td>
+                <td>${createDropdownButton(`talentLeadership${uniqueId}`, ['Always/Most of the Time', 'Sometimes', 'Never'])}</td>
+                <td rowspan="2">${createDropdownButton(`movementReadiness${uniqueId}`, ['Ready for promotion', 'Continue growing in current role', 'Not well placed'])}</td>
+                <td rowspan="2">${createDropdownButton(`talentActions${uniqueId}`, ['Growth/Ready for lateral move or promotion', 'Rewards', 'Development', 'Growth/Not well placed'])}</td>
                 <td rowspan="2" class="totalScore">0</td>
-                <td rowspan="2" class="assignedBox text-wrap">-</td>
+                <td rowspan="2" class="assignedBox">-</td>
                 <td rowspan="2"><button class="btn btn-danger btn-sm removeBtn">Remove</button></td>
             `;
+
             const emptyRow = document.createElement('tr');
             tableBody.appendChild(newRow);
             tableBody.appendChild(emptyRow);
 
-            // Add event listener to update score and box when dropdowns change
+            // Add event listeners for dropdowns to update score for the specific individual
             newRow.querySelectorAll('.dropdown-item').forEach(select => {
-                select.addEventListener('click', calculateScore);
+                select.addEventListener('click', calculateScore.bind(null, uniqueId));
             });
 
-            // Add event listener to remove row
+            // Add event listener for the remove button for the specific individual
             newRow.querySelector('.removeBtn').addEventListener('click', function() {
-                // Get the individual's name from the input field instead of from innerText
-                const individualName = newRow.querySelector(`#individualName${individualCount}`).value;
-
-                // Remove the individual from the box using the retrieved name
-                removeIndividualFromBox(individualName);
-
-                // Remove the row from the table
+                removeIndividualFromBox(document.querySelector(`#individualName${uniqueId}`).value); // Use unique ID
                 newRow.remove();
+                emptyRow.remove();
             });
         });
 
@@ -231,11 +231,11 @@
         }
 
         // Calculate the total score and assigned box
-        function calculateScore() {
-            const row = this.closest('tr');
+        function calculateScore(uniqueId) {
+            const row = document.querySelector(`#individualName${uniqueId}`).closest('tr');
             let totalScore = 0;
 
-            // Sum up scores for the row and the next row
+            // Sum up scores for the row
             row.querySelectorAll('input').forEach(input => {
                 const value = input.value;
                 totalScore += getScore(value);
@@ -245,7 +245,7 @@
             row.querySelector('.totalScore').innerText = totalScore;
 
             // Get the individual's name from the input field
-            const individualName = row.querySelector(`#individualName${individualCount}`).value;
+            const individualName = document.querySelector(`#individualName${uniqueId}`).value;
 
             // Determine which box to assign
             const assignedBox = row.querySelector('.assignedBox');
